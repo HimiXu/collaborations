@@ -1,5 +1,5 @@
 import {Connection, createConnection} from "typeorm";
-import {GithubRepository} from "../domain/repository";
+import {GithubRepository} from "../domain/github-repository";
 
 export const connectPostgres = async (): Promise<Connection> => {
     return createConnection({

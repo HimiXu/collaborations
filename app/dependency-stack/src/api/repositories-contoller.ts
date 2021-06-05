@@ -1,6 +1,6 @@
 import express, {Request, Response} from "express";
 import {gql, GraphQLClient} from "graphql-request";
-import {GithubRepository} from "../domain/repository";
+import {GithubRepository} from "../domain/github-repository";
 import {getConnection, getManager, getRepository} from "typeorm";
 
 export const router = express.Router()
