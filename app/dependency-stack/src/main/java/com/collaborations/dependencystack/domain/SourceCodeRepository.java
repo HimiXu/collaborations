@@ -2,13 +2,16 @@ package com.collaborations.dependencystack.domain;
 
 
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.PositiveOrZero;
 
 @Data
-public class GithubRepository {
+@Table("repositories")
+public class SourceCodeRepository {
     @Id
     private Long id;
     @NotEmpty
@@ -17,4 +20,7 @@ public class GithubRepository {
     private String name;
     @PositiveOrZero
     private Integer stars;
+    @URL
+    private String url;
+    private RepositoryHosting hosting;
 }

@@ -1,31 +1,37 @@
 package com.collaborations.dependencystack.api.rest;
 
-import com.collaborations.dependencystack.domain.GithubRepository;
-import com.collaborations.dependencystack.domain.GithubRepositoryDependency;
-import com.collaborations.dependencystack.domain.GithubRepositoryDependencyRepository;
-import com.collaborations.dependencystack.domain.GithubRepositoryRepository;
+import com.collaborations.dependencystack.domain.GithubRepositoryServices;
+import com.collaborations.dependencystack.domain.SourceCodeRepository;
+import com.collaborations.dependencystack.domain.SourceCodeRepositoryDao;
+import com.collaborations.dependencystack.domain.github.dependencies.GithubDependenciesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
 public class TestController {
 
-    private final GithubRepositoryRepository repositoryRepository;
+    private final SourceCodeRepositoryDao repositoryRepository;
+    private final GithubRepositoryServices repositoryServices;
     private final DatabaseClient client;
-    private final GithubRepositoryDependencyRepository dependencyRepository;
+
+    @GetMapping("/{owner}/{name}")
+    public Mono<GithubDependenciesResponse> test(@PathVariable String owner, @PathVariable String name) {
+        return repositoryServices.getDependencies(owner, name);
+    }
 
     @GetMapping("/repositories")
-    public Flux<GithubRepository> find() {
+    public Flux<SourceCodeRepository> find() {
         return repositoryRepository.findAll();
     }
 
     @GetMapping("/{owner}/{name}/dependencies")
-    public Flux<GithubRepository> findEdges(@PathVariable String owner, @PathVariable String name) {
+    public Flux<SourceCodeRepository> findEdges(@PathVariable String owner, @PathVariable String name) {
         return client.sql("""
 SELECT github_repository.*
 FROM github_repository gr
@@ -40,6 +46,6 @@ AND gr.name = $2
                 .bind("$2",name)
                 .fetch()
                 .all()
-                .cast(GithubRepository.class);
+                .cast(SourceCodeRepository.class);
     }
 }
