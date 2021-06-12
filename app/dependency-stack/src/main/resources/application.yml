@@ -1,0 +1,21 @@
+
+spring:
+  r2dbc:
+    name: ${PG_DEPENDENCY_STACK_DBNAME}
+    username: ${PG_DEPENDENCY_STACK_USERNAME}
+    password: ${PG_DEPENDENCY_STACK_PASSWORD}
+    url: r2dbc:postgresql://${PG_DEPENDENCY_STACK_HOST}:${PG_DEPENDENCY_STACK_PORT}/${spring.r2dbc.name}
+  flyway:
+    url: jdbc:postgresql://${PG_DEPENDENCY_STACK_HOST}:${PG_DEPENDENCY_STACK_PORT}/${spring.r2dbc.name}
+    user: ${PG_DEPENDENCY_STACK_USERNAME}
+    password: ${PG_DEPENDENCY_STACK_PASSWORD}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+
+github:
+  graphql:
+    url: https://api.github.com/graphql
+  auth:
+    token: ${GITHUB_ACCESS_TOKEN}
