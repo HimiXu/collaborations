@@ -1,7 +1,9 @@
 package com.collaborations.dependencystack.infrastructure;
 
 import com.collaborations.dependencystack.domain.GithubServices;
-import com.collaborations.dependencystack.domain.github.dependencies.GithubDependenciesResponse;
+import com.collaborations.dependencystack.domain.GithubDependenciesResponse;
+import com.collaborations.dependencystack.domain.github.GithubRepositoryDependencies;
+import com.collaborations.dependencystack.domain.github.GithubRepositoryVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,8 +15,11 @@ import reactor.core.publisher.Mono;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.BaseStream;
+import java.util.stream.Collectors;
 
 @Service
 public class GithubServicesImpl implements GithubServices {
@@ -48,7 +53,7 @@ public class GithubServicesImpl implements GithubServices {
     }
 
     @Override
-    public Mono<GithubDependenciesResponse> getRepositoryDependencies(String owner, String name) {
+    public Mono<GithubRepositoryDependencies> getRepositoryDependencies(String owner, String name) {
         return loadQuery(getDependenciesQueryPath)
             .flatMap(query -> GraphQLClient.builder()
                     .url(apiUrl)
@@ -58,7 +63,29 @@ public class GithubServicesImpl implements GithubServices {
                     .variables(JSON.create()
                             .put("owner", owner)
                             .put("name", name))
-                    .fetch(GithubDependenciesResponse.class));
+                    .fetch(GithubDependenciesResponse.class))
+                .map(this::map);
+    }
+
+    private GithubRepositoryDependencies map(GithubDependenciesResponse response) {
+        return new GithubRepositoryDependencies(
+                Arrays.stream(response.data()
+                .repository()
+                .dependencyGraphManifests()
+                .nodes())
+                .flatMap(node2 -> Arrays.stream(node2
+                        .dependencies()
+                        .nodes())
+                        .map(GithubDependenciesResponse.Node1::repository)
+                        .filter(Objects::nonNull)
+                        .map(this::map))
+                        .collect(Collectors.toSet()));
+    }
+
+    private GithubRepositoryVertex map(GithubDependenciesResponse.Repository repository) {
+        var owner = repository.nameWithOwner().split("/")[0];
+        var name = repository.nameWithOwner().split("/")[1];
+        return new GithubRepositoryVertex(owner, name, repository.stargazerCount());
     }
 
 

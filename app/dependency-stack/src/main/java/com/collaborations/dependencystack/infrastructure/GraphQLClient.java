@@ -21,7 +21,7 @@ public class GraphQLClient {
     private ObjectNode variables;
 
     @Builder
-    public GraphQLClient(String url, HttpHeaders headers) {
+    private GraphQLClient(String url, HttpHeaders headers) {
         webClient = WebClient.builder()
                 .baseUrl(url)
                 .defaultHeaders(existing -> existing.addAll(headers))

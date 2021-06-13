@@ -1,16 +1,14 @@
 package com.collaborations.dependencystack.api.rest;
 
 import com.collaborations.dependencystack.domain.GithubServices;
-import com.collaborations.dependencystack.domain.SourceCodeRepository;
 import com.collaborations.dependencystack.domain.SourceCodeRepositoryDao;
-import com.collaborations.dependencystack.domain.github.dependencies.GithubDependenciesResponse;
-import com.collaborations.dependencystack.infrastructure.GithubServicesImpl;
+import com.collaborations.dependencystack.domain.GithubDependenciesResponse;
+import com.collaborations.dependencystack.domain.github.GithubRepositoryDependencies;
 import lombok.RequiredArgsConstructor;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -22,7 +20,7 @@ public class TestController {
     private final DatabaseClient client;
 
     @GetMapping("/{owner}/{name}")
-    public Mono<GithubDependenciesResponse> test(@PathVariable String owner, @PathVariable String name) {
+    public Mono<GithubRepositoryDependencies> test(@PathVariable String owner, @PathVariable String name) {
         return githubServices.getRepositoryDependencies(owner, name);
     }
 
