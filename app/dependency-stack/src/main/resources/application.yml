@@ -15,7 +15,5 @@ springdoc:
     path: /swagger-ui
 
 github:
-  graphql:
-    url: https://api.github.com/graphql
   auth:
     token: ${GITHUB_ACCESS_TOKEN}

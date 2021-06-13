@@ -1,0 +1,18 @@
+query getDependencies($owner: String! , $name: String!) {
+    repository(owner: $owner, name: $name){
+        nameWithOwner
+        stargazerCount
+        dependencyGraphManifests {
+            nodes {
+                dependencies {
+                    nodes {
+                        repository {
+                            nameWithOwner
+                            stargazerCount
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
